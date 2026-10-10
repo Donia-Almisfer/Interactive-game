@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>عنصر | تحدي الكيمياء</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:#183153;font-family:Tahoma,Arial;
+min-height:100vh;display:grid;place-items:center;padding:25px}
+:root{--blue:#2864ed}
+main{width:min(100%,600px);z-index:1;text-align:center}
+.brand{color:var(--blue);font-size:24px;font-weight:bold;margin-bottom:35px}
+h1{font-size:42px;line-height:1.4;margin:15px 0}
+h1 span{color:var(--blue)}
+p{color:#74839a;line-height:1.9}
+.card{border:1px solid #e2eaf6;border-radius:25px;padding:28px;
+background:#fff;box-shadow:0 20px 70px #173b7610}
+input,button{font:inherit;border-radius:13px;padding:16px}
+input{width:100%;border:1px solid #dce5f2;background:#f8faff;
+margin:15px 0;outline-color:var(--blue)}
+button{cursor:pointer;border:0;background:var(--blue);color:white;
+font-weight:bold}
+button:disabled{opacity:.4;cursor:default}
+.wide{width:100%}
+.tag{display:inline-block;color:var(--blue);background:#edf3ff;
+border-radius:50px;padding:10px 17px;font-size:13px}
+.meta{display:flex;justify-content:space-between;align-items:center;
+margin-bottom:20px;color:#74839a;font-size:14px}
+.timer{background:#edf3ff;color:var(--blue);padding:12px;
+border-radius:12px;direction:ltr;font-weight:bold}
+.urgent{color:#c44335;background:#fff0ed}
+.bar{height:5px;background:#edf2fa;margin-bottom:25px;border-radius:9px}
+.bar div{height:100%;background:var(--blue);border-radius:9px}
+h2{font-size:23px;line-height:1.8;text-align:right}
+.option{width:100%;text-align:right;background:white;color:#183153;
+border:1px solid #dfe7f2;margin:6px 0;line-height:1.6;display:flex;gap:12px}
+.option b{color:var(--blue)}
+.option.selected{background:#edf3ff;border-color:var(--blue)}
+.actions{display:flex;gap:12px;margin-top:25px}
+.actions button{flex:1}
+.secondary{background:#edf3ff;color:var(--blue)}
+.score{font-size:80px;font-weight:bold;color:var(--blue);margin:20px}
+small{color:#8592a7;font-size:13px;line-height:1.8}
+.float{position:fixed;pointer-events:none;color:var(--blue);
+background:#f2f6ff;border:1px solid #e5edff;width:75px;height:75px;
+border-radius:22px;display:grid;place-items:center;font-size:32px;
+animation:float 6s ease-in-out infinite}
+.a{left:8%;top:20%;rotate:-12deg}
+.b{right:7%;bottom:20%;animation-delay:-2s}
+.c{left:15%;bottom:12%;font-size:22px;animation-delay:-4s}
+.d{right:12%;top:15%;font-size:22px;animation-delay:-3s}
+@keyframes float{50%{translate:0 -20px;rotate:8deg}}
+#status{font-size:13px;color:#74839a;margin-top:15px}
+@media(max-width:800px){
+.float{opacity:.35;width:48px;height:48px;font-size:22px}
+.a{left:1%;top:8%}.d{right:1%;top:10%}
+.b{right:1%;bottom:5%}.c{left:1%;bottom:5%}
+h1{font-size:34px}.card{padding:22px}.actions{flex-direction:column}
+}
+@media(prefers-reduced-motion:reduce){.float{animation:none}}
+</style>
+<div aria-hidden="true">
+<div class="float a">⚛</div><div class="float b">⚗</div>
+<div class="float c">H₂O</div><div class="float d">Na⁺</div>
+</div>
+<main id="app"></main>
+<script>
+const qs=[
+["ما هي الحالة التي تكون فيها جسيمات المادة متقاربة جداً وتتحرك حركة اهتزازية فقط؟",
+["الغازية","السائلة","الصلبة","البلازما"],2],
+["المواد الصلبة التي تترتب جسيماتها بنمط هندسي منظم ومكرر تسمى:",
+["المواد الصلبة غير البلورية","المواد الصلبة البلورية","السوائل المترابطة","البوليمرات المرنة"],1],
+["أي من المواد التالية يعتبر مثالاً على مادة صلبة غير بلورية (زجاجية)؟",
+["كلوريد الصوديوم","الألماس","الزجاج والمطاط","الجليد النقي"],2],
+["تُعرف مقاومة السائل للتدفق والانسياب بـ:",
+["التوتر السطحي","الخاصية الشعرية","اللزوجة","الضغط البخاري"],2],
+["كيف تتأثر لزوجة السوائل عادةً عند ارتفاع درجات الحرارة؟",
+["تقل اللزوجة ويسهل تدفق السائل","تزيد اللزوجة ويصبح أثقل","تتجمد المادة فوراً","لا تتأثر نهائياً"],0],
+["القوى التي تجعل سطح السائل يتقوس أو يتماسك كأنه غشاء رقيق هي:",
+["قوى التلاصق","التوتر السطحي","الخاصية الشعرية","قوى التنافر"],1],
+["ارتفاع السائل في الأنابيب الضيقة (الخاصية الشعرية) ينتج أساساً عن:",
+["انعدام الجاذبية","قوى التلاصق بين جزيئات السائل وجدران الأنبوب","زيادة حجم الإناء","تبخر السائل السريع"],1],
+["أي العوامل الآتية تزيد من لزوجة السائل؟",
+["ارتفاع درجة الحرارة","خفة وزن الجزيئات","قوى التجاذب الكبيرة بين الجزيئات","تقليل حجم الإناء"],2],
+["المواد الصلبة غير البلورية تتكون عادةً عندما:",
+["تبرد السوائل ببطء شديد","تبرد السوائل بسرعة دون أن تتيح للجسيمات أن تترتب بانتظام","يتم تسخين المادة إلى درجة الغليان","تتجمد المواد في الفراغ"],1],
+["لماذا تحافظ المادة الصلبة على شكلها بينما يأخذ السائل شكل الإناء الذي يوضع فيه؟",
+["لأن جزيئات الصلب أخف وزناً بكثير","لأن جزيئات السائل غير مرتبطة بأي قوى","لأن جزيئات الصلب مقيدة في مكانها، بينما جزيئات السائل حرة وقابلة للانزلاق","لأن السوائل لا تحتوي على كتلة"],2]
+];
+const app=document.getElementById("app");
+let player="",i=0,score=0,choice=null,end=0,clock,playing=false;
+const letters=["أ","ب","ج","د"];
+function home(){
+ clearInterval(clock);playing=false;
+ app.innerHTML=`
+ <div class="brand">⚛ عنصر</div>
+ <span class="tag">تحدي حالات المادة وخواصها</span>
+ <h1>كل سؤال،<br><span>اكتشاف جديد.</span></h1>
+ <p>١٠ أسئلة في عالم الكيمياء.<br>دقيقة لكل سؤال… جاهز للتحدي؟</p>
+ <form class="card">
+ <label for="name">بأي اسم نحتفل بنتيجتك؟</label>
+ <input id="name" required maxlength="40"
+ placeholder="اسمك أو اسم المستخدم" autocomplete="nickname">
+ <button class="wide">ابدأ التحدي ←</button>
+ <p><small>اسم فقط، بدون كلمة مرور</small></p>
+ </form>`;
+ document.getElementById("name").value=player;
+ app.querySelector("form").onsubmit=e=>{
+  e.preventDefault();
+  const input=document.getElementById("name");
+  player=input.value.trim();
+  if(!player){input.setCustomValidity("اكتب اسمك أولاً");input.reportValidity();return}
+  input.setCustomValidity("");i=0;score=0;question();
+ };
+ document.getElementById("name").oninput=e=>e.target.setCustomValidity("");
+}
+function question(){
+ clearInterval(clock);choice=null;playing=true;end=Date.now()+60000;
+ app.innerHTML=`
+ <div class="brand">⚛ عنصر</div>
+ <div class="meta"><span>السؤال ${i+1} من ١٠</span>
+ <span id="timer" class="timer" role="timer">01:00</span></div>
+ <div class="bar"><div style="width:${i*10}%"></div></div>
+ <section class="card">
+ <h2 id="q" tabindex="-1"></h2>
+ <div id="options" role="group" aria-labelledby="q"></div>
+ <button id="next" class="wide" style="margin-top:20px" disabled>
+ ${i===9?"اعرض نتيجتي":"تأكيد الإجابة والمتابعة"} ←</button>
+ <p><small>اختر إجابتك ثم أكّدها قبل انتهاء الوقت.<br>
+ عند انتهاء الدقيقة ينتقل السؤال تلقائياً.</small></p>
+ </section>`;
+ document.getElementById("q").textContent=qs[i][0];
+ qs[i][1].forEach((text,n)=>{
+  const b=document.createElement("button");
+  b.className="option";b.setAttribute("aria-pressed","false");
+  const mark=document.createElement("b");mark.textContent=letters[n];
+  const label=document.createElement("span");label.textContent=text;
+  b.append(mark,label);
+  b.onclick=()=>{
+   if(Date.now()>=end){next(true);return}
+   choice=n;
+   document.querySelectorAll(".option").forEach((el,j)=>{
+    el.classList.toggle("selected",n===j);
+    el.setAttribute("aria-pressed",String(n===j));
+   });
+   document.getElementById("next").disabled=false;
+  };
+  document.getElementById("options").append(b);
+ });
+ document.getElementById("next").onclick=()=>next(Date.now()>=end);
+ document.getElementById("q").focus();
+ clock=setInterval(tick,150);
+}
+function tick(){
+ if(!playing)return;
+ const seconds=Math.max(0,Math.ceil((end-Date.now())/1000));
+ const t=document.getElementById("timer");
+ t.textContent=String(Math.floor(seconds/60)).padStart(2,"0")+":"+
+ String(seconds%60).padStart(2,"0");
+ t.classList.toggle("urgent",seconds<=10);
+ if(!seconds)next(true);
+}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)tick()});
+function next(timeout){
+ if(!playing)return;
+ playing=false;clearInterval(clock);
+ if(!timeout&&choice===qs[i][2])score++;
+ i++;
+ i<qs.length?question():result();
+}
+function result(){
+ app.innerHTML=`
+ <div class="brand">⚛ عنصر</div>
+ <span class="tag">اكتمل التحدي</span>
+ <h1>مبروك <span id="player"></span>!</h1>
+ <p>أنهيت رحلتك في عالم الكيمياء.</p>
+ <section class="card">
+ <div style="font-size:45px;color:var(--blue)">✧</div>
+ <p>نتيجتك النهائية</p>
+ <div class="score">${score}<span style="font-size:25px;color:#91a0b7"> / 10</span></div>
+ <p>${score>=8?"معرفة رائعة تستحق الاحتفال!":"كل محاولة تزيد معرفتك. واصل الاكتشاف!"}</p>
+ <small>الإجابة غير المؤكدة عند انتهاء الوقت تُحسب بلا إجابة.</small>
+ <div class="actions">
+ <button class="secondary" id="retry">↻ أعد التحدي</button>
+ <button id="share">↗ شارك النتيجة</button>
+ </div><div id="status" role="status"></div>
+ </section>`;
+ document.getElementById("player").textContent=player;
+ document.getElementById("retry").onclick=home;
+ document.getElementById("share").onclick=share;
+}
+async function share(){
+ const button=document.getElementById("share");
+ const status=document.getElementById("status");
+ button.disabled=true;
+ try{
+  const c=document.createElement("canvas");c.width=1200;c.height=900;
+  const x=c.getContext("2d");
+  x.fillStyle="#edf3ff";x.fillRect(0,0,1200,900);
+  x.fillStyle="#fff";x.fillRect(65,65,1070,770);
+  x.textAlign="center";x.direction="rtl";
+  x.fillStyle="#2864ed";x.font="bold 46px Tahoma";
+  x.fillText("عنصر | تحدي الكيمياء",600,180);
+  x.fillStyle="#183153";x.font="bold 45px Tahoma";
+  x.fillText("مبروك!",600,290);
+  let size=65;
+  do{
+   x.font="bold "+size+"px Tahoma";
+   if(x.measureText(player).width<940)break;
+   size-=2;
+  }while(size>15);
+  x.fillText(player,600,395);
+  x.fillStyle="#2864ed";x.direction="ltr";
+  x.font="bold 150px Tahoma";x.fillText(score+" / 10",600,600);
+  x.direction="rtl";x.fillStyle="#74839a";
+  x.font="30px Tahoma";x.fillText("حالات المادة وخواصها",600,710);
+  x.font="23px Tahoma";x.fillText("فضولك هو البداية",600,780);
+  const blob=await new Promise(resolve=>c.toBlob(resolve,"image/png"));
+  if(!blob)throw Error("image");
+  const file=new File([blob],"chemistry-result.png",{type:"image/png"});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+   await navigator.share({files:[file],title:"نتيجتي في تحدي الكيمياء"});
+   status.textContent="تمت مشاركة بطاقة النتيجة";
+  }else{
+   const url=URL.createObjectURL(blob);
+   const a=document.createElement("a");
+   a.href=url;a.download="chemistry-result.png";a.click();
+   setTimeout(()=>URL.revokeObjectURL(url),60000);
+   status.textContent="تم تنزيل صورة النتيجة، جاهزة للمشاركة";
+  }
+ }catch(e){
+  status.textContent=e.name==="AbortError"?"تم إلغاء المشاركة":
+  "تعذرت المشاركة. حاول مرة أخرى.";
+ }finally{button.disabled=false}
+}
+home();
+</script>
+</html>
